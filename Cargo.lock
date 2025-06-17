@@ -179,7 +179,7 @@ dependencies = [
 
 [[package]]
 name = "fume"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "anyhow",
  "fume-async",
@@ -194,21 +194,21 @@ dependencies = [
 
 [[package]]
 name = "fume-async"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "reqwest",
 ]
 
 [[package]]
 name = "fume-blocking"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "reqwest",
 ]
 
 [[package]]
 name = "fume-core"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "serde",
  "serde_json",
