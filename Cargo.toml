@@ -1,0 +1,3 @@
+[workspace]
+resolver = "3"
+members = [ "fume", "fume-core", "fume-async" , "fume-blocking"]

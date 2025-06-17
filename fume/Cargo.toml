@@ -1,0 +1,33 @@
+[package]
+name = "fume"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+fume-async = { version = "0.1.0", path = "../fume-async", optional = true }
+fume-blocking = { version = "0.1.0", path = "../fume-blocking", optional = true }
+fume-core = { version = "0.1.0", path = "../fume-core" }
+serde = "1.0.219"
+serde_json = "1.0.140"
+thiserror = "2.0.12"
+
+[features]
+default = ["async", "reqwest"]
+async = ["dep:fume-async"]
+blocking = ["dep:fume-blocking"]
+reqwest = ["fume-async/reqwest", "fume-blocking/reqwest"]
+
+[dev-dependencies]
+anyhow = "1.0.98"
+reqwest = "0.12.20"
+tokio = { version = "1.45.1", features = ["full"] }
+
+[[example]]
+name = "get_supported_api_list_async"
+path = "examples/get_supported_api_list_async.rs"
+required-features = ["async", "reqwest"]
+
+[[example]]
+name = "get_supported_api_list_blocking"
+path = "examples/get_supported_api_list_blocking.rs"
+required-features = ["blocking", "reqwest"]
