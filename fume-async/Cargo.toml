@@ -9,7 +9,7 @@ keywords = [ "steam", "api" ]
 exclude = [ ".*", "flake.*" ]
 
 [dependencies]
-reqwest = { version = "0.12.20", optional = true }
+reqwest = { version = "0.12.22", optional = true }
 
 [features]
 reqwest = ["dep:reqwest"]
