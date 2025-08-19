@@ -23,7 +23,7 @@ blocking = ["dep:fume-blocking"]
 reqwest = ["fume-async/reqwest", "fume-blocking/reqwest"]
 
 [dev-dependencies]
-anyhow = "1.0.98"
+anyhow = "1.0.99"
 reqwest = "0.12.23"
 tokio = { version = "1.47.1", features = ["full"] }
 
