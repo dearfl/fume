@@ -25,7 +25,7 @@ reqwest = ["fume-async/reqwest", "fume-blocking/reqwest"]
 [dev-dependencies]
 anyhow = "1.0.98"
 reqwest = "0.12.20"
-tokio = { version = "1.45.1", features = ["full"] }
+tokio = { version = "1.47.1", features = ["full"] }
 
 [[example]]
 name = "get_supported_api_list_async"
