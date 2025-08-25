@@ -14,7 +14,7 @@ fume-async = { workspace = true, optional = true }
 fume-blocking = { workspace = true, optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-thiserror = "2.0.12"
+thiserror = "2.0.15"
 
 [features]
 default = ["async", "reqwest"]
