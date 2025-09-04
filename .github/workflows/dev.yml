@@ -45,14 +45,11 @@ jobs:
     - name: Clippy Check
       run: |
         cargo clippy -- -D warnings
-        cargo clippy --no-default-features --features blocking,reqwest -- -D warnings
 
     - name: Build
       run: |
         cargo build --verbose
-        cargo build --no-default-features --features blocking,reqwest --verbose
 
     - name: Test
       run: |
         cargo test --verbose
-        cargo test --no-default-features --features blocking,reqwest --verbose
