@@ -10,32 +10,24 @@ exclude = [ ".*", "flake.*" ]
 
 [dependencies]
 fume-core = { workspace = true }
-fume-async = { workspace = true, optional = true }
-fume-blocking = { workspace = true, optional = true }
+fume-backend = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-thiserror = "2.0.16"
+thiserror = { workspace = true }
 
 [features]
-default = ["async", "reqwest"]
-async = ["dep:fume-async"]
-blocking = ["dep:fume-blocking"]
-reqwest = ["fume-async/reqwest", "fume-blocking/reqwest"]
+default = ["reqwest"]
+reqwest = ["fume-backend/reqwest"]
 
 [dev-dependencies]
-anyhow = "1.0.99"
-reqwest = "0.12.23"
-tokio = { version = "1.47.1", features = ["full"] }
+anyhow = { workspace = true }
+reqwest = { workspace = true }
+tokio = { workspace = true }
 
 [[example]]
-name = "get_supported_api_list_async"
-path = "examples/get_supported_api_list_async.rs"
-required-features = ["async", "reqwest"]
-
-[[example]]
-name = "get_supported_api_list_blocking"
-path = "examples/get_supported_api_list_blocking.rs"
-required-features = ["blocking", "reqwest"]
+name = "get_supported_api_list"
+path = "examples/get_supported_api_list.rs"
+required-features = ["reqwest"]
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -1,17 +1,13 @@
 use serde::de::DeserializeOwned;
 
-pub const HOST: &str = "api.steampowered.com";
-pub const VERSION: &str = "v1";
+pub mod util;
 
-pub mod steam_web_api_util;
+pub trait Api {
+    fn interface() -> &'static str;
+    fn method() -> &'static str;
+    fn version() -> &'static str;
 
-// TODO: maybe return &str && &[]?
-pub trait Query {
     type Response: DeserializeOwned;
-    fn url() -> String;
-    fn query(&self) -> impl Iterator<Item = (&str, &str)>;
-}
-
-pub(crate) fn url(interface: &str, method: &str) -> String {
-    format!("https://{HOST}/{interface}/{method}/{VERSION}")
+    // TODO: maybe return &str && &[]?
+    fn parameters(&self) -> impl Iterator<Item = (&str, &str)>;
 }

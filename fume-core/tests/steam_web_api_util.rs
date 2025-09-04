@@ -1,4 +1,4 @@
-use fume_core::steam_web_api_util::{GetServerInfoResponse, GetSupportedApiListResponse};
+use fume_core::util::{GetServerInfoResponse, GetSupportedApiListResponse};
 
 #[test]
 fn get_supported_apis_decode() {

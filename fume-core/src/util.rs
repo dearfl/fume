@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Query, url};
+use crate::Api;
 
 pub const INTERFACE: &str = "ISteamWebAPIUtil";
 
@@ -9,16 +9,25 @@ pub struct GetServerInfo;
 
 impl GetServerInfo {
     pub const METHOD: &str = "GetServerInfo";
+    pub const VERSION: &str = "v1";
 }
 
-impl Query for GetServerInfo {
-    type Response = GetServerInfoResponse;
-
-    fn url() -> String {
-        url(INTERFACE, Self::METHOD)
+impl Api for GetServerInfo {
+    fn interface() -> &'static str {
+        INTERFACE
     }
 
-    fn query(&self) -> impl Iterator<Item = (&str, &str)> {
+    fn method() -> &'static str {
+        Self::METHOD
+    }
+
+    fn version() -> &'static str {
+        Self::VERSION
+    }
+
+    type Response = GetServerInfoResponse;
+
+    fn parameters(&self) -> impl Iterator<Item = (&str, &str)> {
         std::iter::empty()
     }
 }
@@ -35,16 +44,25 @@ pub struct GetSupportedApiList;
 
 impl GetSupportedApiList {
     pub const METHOD: &str = "GetSupportedAPIList";
+    pub const VERSION: &str = "v1";
 }
 
-impl Query for GetSupportedApiList {
-    type Response = GetSupportedApiListResponse;
-
-    fn url() -> String {
-        url(INTERFACE, Self::METHOD)
+impl Api for GetSupportedApiList {
+    fn interface() -> &'static str {
+        INTERFACE
     }
 
-    fn query(&self) -> impl Iterator<Item = (&str, &str)> {
+    fn method() -> &'static str {
+        Self::METHOD
+    }
+
+    fn version() -> &'static str {
+        Self::VERSION
+    }
+
+    type Response = GetSupportedApiListResponse;
+
+    fn parameters(&self) -> impl Iterator<Item = (&str, &str)> {
         std::iter::empty()
     }
 }

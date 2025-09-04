@@ -1,24 +1,11 @@
 pub mod error;
 
-#[cfg(feature = "async")]
-mod steam_async;
+mod steam;
+pub use steam::*;
 
-#[cfg(feature = "async")]
-pub use steam_async::*;
+use fume_backend::Backend;
 
-#[cfg(feature = "blocking")]
-mod steam_blocking;
-
-#[cfg(feature = "blocking")]
-pub use steam_blocking::*;
-
-#[cfg(feature = "async")]
-use fume_async::Backend;
-
-#[cfg(feature = "blocking")]
-use fume_blocking::Backend;
-
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy)]
 pub struct SteamApiKey {
     pub key: &'static str,
 }
@@ -30,17 +17,15 @@ impl SteamApiKey {
     }
 
     pub fn with_client<B: Backend + 'static>(self, client: B) -> Steam<Self, B> {
-        let client = Box::leak(Box::new(client));
-        Steam { key: self, client }
+        Steam::with_auth_and_client(self, client)
     }
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-pub struct Unauthorized;
+pub struct Unauthorize;
 
-impl Unauthorized {
+impl Unauthorize {
     pub fn with_client<B: Backend + 'static>(client: B) -> Steam<Self, B> {
-        let client = Box::leak(Box::new(client));
-        Steam { key: Self, client }
+        Steam::with_auth_and_client(Unauthorize, client)
     }
 }
