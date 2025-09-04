@@ -1,5 +1,5 @@
 #[allow(async_fn_in_trait)]
-pub trait Backend {
+pub trait Backend: Clone + 'static {
     type Error: std::error::Error;
     async fn get(&self, url: &str, query: &[(&str, &str)]) -> Result<String, Self::Error>;
 }
