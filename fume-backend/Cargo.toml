@@ -1,5 +1,5 @@
 [package]
-name = "fume-async"
+name = "fume-backend"
 version = "0.0.0"
 edition = "2024"
 license = "GLWTPL"
@@ -8,11 +8,12 @@ repository = "https://github.com/dearfl/fume"
 keywords = [ "steam", "api" ]
 exclude = [ ".*", "flake.*" ]
 
-[dependencies]
-reqwest = { version = "0.12.23", optional = true }
-
 [features]
+default = ["reqwest"]
 reqwest = ["dep:reqwest"]
+
+[dependencies]
+reqwest = { workspace = true, optional = true }
 
 [lints.rust]
 unsafe_code = "forbid"

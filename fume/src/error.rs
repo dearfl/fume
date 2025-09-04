@@ -1,10 +1,6 @@
 use thiserror::Error;
 
-#[cfg(feature = "async")]
-use fume_async::Backend;
-
-#[cfg(feature = "blocking")]
-use fume_blocking::Backend;
+use fume_backend::Backend;
 
 #[derive(Debug, Error)]
 pub enum Error<B>

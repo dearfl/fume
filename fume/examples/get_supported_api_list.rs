@@ -1,9 +1,10 @@
 use std::time::Duration;
 
-use fume::{SteamApiKey, Unauthorized};
+use fume::{SteamApiKey, Unauthorize};
 
-fn main() -> anyhow::Result<()> {
-    let client = reqwest::blocking::ClientBuilder::new()
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let client = reqwest::ClientBuilder::new()
         .connect_timeout(Duration::from_secs(5))
         .timeout(Duration::from_secs(10))
         .build()?;
@@ -12,11 +13,11 @@ fn main() -> anyhow::Result<()> {
         Some(key) => {
             let api = SteamApiKey::new(key);
             let steam = api.with_client(client);
-            steam.apis()?
+            steam.apis().await?
         }
         None => {
-            let steam = Unauthorized::with_client(client);
-            steam.apis()?
+            let steam = Unauthorize::with_client(client);
+            steam.apis().await?
         }
     };
     println!("{:#?}", apilist);

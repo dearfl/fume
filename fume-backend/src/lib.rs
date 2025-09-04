@@ -1,4 +1,3 @@
-// sealed?
 #[allow(async_fn_in_trait)]
 pub trait Backend {
     type Error: std::error::Error;
