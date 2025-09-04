@@ -9,13 +9,13 @@ use crate::{Auth, error::Error};
 pub(crate) const HOST: &str = "api.steampowered.com";
 
 #[derive(Clone, Debug)]
-pub struct Steam<A: Auth + Copy, B: Backend + 'static> {
+pub struct Steam<A: Auth + Copy, B: Backend> {
     pub(crate) auth: A,
     pub(crate) client: B,
     pub(crate) host: &'static str,
 }
 
-impl<A: Auth + Copy, B: Backend + 'static> Steam<A, B> {
+impl<A: Auth + Copy, B: Backend> Steam<A, B> {
     pub(crate) fn with_auth_and_client(key: A, client: B) -> Self {
         Self {
             auth: key,
