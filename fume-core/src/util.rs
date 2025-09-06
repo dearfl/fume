@@ -27,7 +27,7 @@ impl Api for GetServerInfo {
 
     type Response = GetServerInfoResponse;
 
-    fn parameters(&self) -> impl Iterator<Item = (&str, &str)> {
+    fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
         std::iter::empty()
     }
 }
@@ -62,7 +62,7 @@ impl Api for GetSupportedApiList {
 
     type Response = GetSupportedApiListResponse;
 
-    fn parameters(&self) -> impl Iterator<Item = (&str, &str)> {
+    fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
         std::iter::empty()
     }
 }

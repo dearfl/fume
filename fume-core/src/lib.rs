@@ -1,5 +1,6 @@
 use serde::de::DeserializeOwned;
 
+pub mod user;
 pub mod util;
 
 pub trait Api {
@@ -9,5 +10,10 @@ pub trait Api {
 
     type Response: DeserializeOwned;
     // TODO: maybe return &str && &[]?
-    fn parameters(&self) -> impl Iterator<Item = (&str, &str)>;
+    fn parameters(&self) -> impl Iterator<Item = (&str, String)>;
+}
+
+pub trait Param {
+    fn name() -> &'static str;
+    fn value(&self) -> String;
 }
