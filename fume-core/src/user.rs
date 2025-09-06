@@ -7,7 +7,7 @@ pub(crate) const STEAM_ID_DELTA: u64 = 76561197960265728;
 
 #[derive(Copy, Clone, Debug, Serialize)]
 #[serde(transparent)]
-pub struct SteamId(u64);
+pub struct SteamId(pub u64);
 
 impl From<u64> for SteamId {
     fn from(value: u64) -> Self {

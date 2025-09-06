@@ -2,6 +2,8 @@ use thiserror::Error;
 
 use fume_backend::Backend;
 
+/// Unified error definition, different backend will
+/// return different error type.
 #[derive(Debug, Error)]
 pub enum Error<B>
 where
