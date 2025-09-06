@@ -153,3 +153,91 @@ pub struct Friend {
     pub relationship: Relationship,
     pub friend_since: u64,
 }
+
+#[derive(Clone, Debug)]
+pub struct GetUserGroupList {
+    pub steamid: SteamId,
+}
+
+impl GetUserGroupList {
+    pub const METHOD: &str = "GetUserGroupList";
+    pub const VERSION: &str = "v1";
+}
+
+impl Api for GetUserGroupList {
+    fn interface() -> &'static str {
+        INTERFACE
+    }
+
+    fn method() -> &'static str {
+        Self::METHOD
+    }
+
+    fn version() -> &'static str {
+        Self::VERSION
+    }
+
+    type Response = GetUserGroupListResponse;
+
+    fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
+        std::iter::once((SteamId::name(), self.steamid.value()))
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
+pub struct GetUserGroupListResponse {
+    pub response: GetUserGroupListResponseWrapper,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
+pub struct GetUserGroupListResponseWrapper {
+    pub success: bool,
+    pub groups: Vec<UserGroup>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
+pub struct UserGroup {
+    pub gid: GroupId,
+}
+
+#[derive(Copy, Clone, Debug, Serialize)]
+#[serde(transparent)]
+pub struct GroupId(pub u64);
+
+impl<'de> Deserialize<'de> for GroupId {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct GroupIdVisitor;
+
+        impl<'de> Visitor<'de> for GroupIdVisitor {
+            type Value = GroupId;
+
+            fn expecting(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                fmt.write_str("integer or string")
+            }
+
+            fn visit_u64<E>(self, val: u64) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                Ok(GroupId(val))
+            }
+
+            fn visit_str<E>(self, val: &str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                val.parse::<u64>()
+                    .map_err(|_| E::custom("failed to parse groupid"))
+                    .map(GroupId)
+            }
+        }
+
+        deserializer.deserialize_any(GroupIdVisitor)
+    }
+}
