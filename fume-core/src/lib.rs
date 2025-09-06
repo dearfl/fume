@@ -1,5 +1,6 @@
 use serde::de::DeserializeOwned;
 
+pub mod app;
 pub mod user;
 pub mod util;
 

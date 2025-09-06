@@ -3,6 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use fume_backend::Backend;
 use fume_core::{
     Api,
+    app::{App, GetAppList},
     user::SteamId,
     util::{GetServerInfo, GetServerInfoResponse, GetSupportedApiList, Interface},
 };
@@ -64,15 +65,51 @@ impl<A: Auth, B: Backend> Steam<A, B> {
     }
 
     /// get the availble apis, SteamApiKey and Unauthorize will return different result
+    /// ```rust,no_run
+    /// use fume::{Auth, Unauthorize};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let steam = Unauthorize.with_client(reqwest::Client::new());
+    ///     let apps = steam.apis().await?;
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn apis(&self) -> Result<Vec<Interface>, Error<B>> {
         let api = GetSupportedApiList;
         self.get(api).await.map(|resp| resp.apilist.interfaces)
     }
 
     /// get server info
+    /// ```rust,no_run
+    /// use fume::{Auth, Unauthorize};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let steam = Unauthorize.with_client(reqwest::Client::new());
+    ///     let apps = steam.server_info().await?;
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn server_info(&self) -> Result<ServerInfo, Error<B>> {
         let api = GetServerInfo;
         self.get(api).await.map(Into::into)
+    }
+
+    /// get list of steam apps
+    /// ```rust,no_run
+    /// use fume::{Auth, Unauthorize};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let steam = Unauthorize.with_client(reqwest::Client::new());
+    ///     let apps = steam.apps().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn apps(&self) -> Result<Vec<App>, Error<B>> {
+        let api = GetAppList;
+        self.get(api).await.map(|apps| apps.applist.apps)
     }
 }
 
