@@ -3,16 +3,22 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use fume_backend::Backend;
 use fume_core::user::{GetFriendList, Relationship, SteamId};
 
-use crate::{Steam, SteamApiKey, error::Error};
+use crate::{Steam, auth::SteamApiKey, error::Error};
 
+/// Represent a steam user
 pub struct User<'s, B: Backend> {
     pub(crate) client: &'s Steam<SteamApiKey, B>,
-    pub(crate) id: SteamId,
+    /// 64-bit steam user id
+    pub id: SteamId,
 }
 
+/// Represent a steam user friend
 pub struct Friend {
+    /// 64-bit steam user id
     pub id: SteamId,
+    /// relationship: all or friend
     pub relationship: Relationship,
+    /// became friend since when
     pub since: SystemTime,
 }
 
@@ -27,6 +33,21 @@ impl From<&fume_core::user::Friend> for Friend {
 }
 
 impl<'s, B: Backend> User<'s, B> {
+    /// request friend list, if a user's friend list is marked as private,
+    /// then this will return an HTTP 401 Unauthorized error.
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    /// use fume_core::user::Relationship;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let user = steam.user(0u64);
+    ///     let friends = user.friends(Some(Relationship::Friend)).await?;
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn friends(
         &self,
         relationship: Option<Relationship>,

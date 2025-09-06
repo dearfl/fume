@@ -1,3 +1,5 @@
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
 use fume_backend::Backend;
 use fume_core::{
     Api,
@@ -5,10 +7,15 @@ use fume_core::{
     util::{GetServerInfo, GetServerInfoResponse, GetSupportedApiList, Interface},
 };
 
-use crate::{Auth, SteamApiKey, User, error::Error};
+use crate::{
+    User,
+    auth::{Auth, SteamApiKey},
+    error::Error,
+};
 
 pub(crate) const HOST: &str = "api.steampowered.com";
 
+/// Steam HTTP Client
 #[derive(Clone, Debug)]
 pub struct Steam<A: Auth, B: Backend> {
     pub(crate) auth: A,
@@ -35,6 +42,7 @@ impl<A: Auth, B: Backend> Steam<A, B> {
         )
     }
 
+    /// replace the default api host with custom host
     pub fn with_custom_host(self, host: &'static str) -> Self {
         Self { host, ..self }
     }
@@ -55,22 +63,38 @@ impl<A: Auth, B: Backend> Steam<A, B> {
         Ok(serde_json::from_str(&content)?)
     }
 
+    /// get the availble apis, SteamApiKey and Unauthorize will return different result
     pub async fn apis(&self) -> Result<Vec<Interface>, Error<B>> {
         let api = GetSupportedApiList;
         self.get(api).await.map(|resp| resp.apilist.interfaces)
     }
 
-    pub async fn server_info(&self) -> Result<GetServerInfoResponse, Error<B>> {
+    /// get server info
+    pub async fn server_info(&self) -> Result<ServerInfo, Error<B>> {
         let api = GetServerInfo;
-        self.get(api).await
+        self.get(api).await.map(Into::into)
     }
 }
 
 impl<B: Backend> Steam<SteamApiKey, B> {
+    /// Construct a steam user
     pub fn user(&'_ self, id: impl Into<SteamId>) -> User<'_, B> {
-        User {
-            client: self,
-            id: id.into(),
+        let id = id.into();
+        User { client: self, id }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ServerInfo {
+    pub servertime: SystemTime,
+    pub servertimestring: String,
+}
+
+impl From<GetServerInfoResponse> for ServerInfo {
+    fn from(value: GetServerInfoResponse) -> Self {
+        Self {
+            servertime: UNIX_EPOCH + Duration::from_secs(value.servertime),
+            servertimestring: value.servertimestring,
         }
     }
 }

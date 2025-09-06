@@ -5,9 +5,29 @@
 
 A strongly-opinionated Rust wrapper for steam web APIs.
 
-## Usage
+## Example
 
-See examples.
+get list of apis that don't require api key.
+
+```rust,no_run
+use std::time::Duration;
+
+use fume::{Auth, Unauthorize};
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let client = reqwest::ClientBuilder::new()
+        .connect_timeout(Duration::from_secs(5))
+        .timeout(Duration::from_secs(10))
+        .build()?;
+
+    let steam = Unauthorize.with_client(client);
+    let apilist = steam.apis().await?;
+    println!("{:#?}", apilist);
+
+    Ok(())
+}
+```
 
 ## Limitations
 
