@@ -1,7 +1,7 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use fume_backend::Backend;
-use fume_core::user::{GetFriendList, Relationship, SteamId};
+use fume_core::user::{GetFriendList, GetUserGroupList, GroupId, Relationship, SteamId};
 
 use crate::{Steam, auth::SteamApiKey, error::Error};
 
@@ -43,7 +43,7 @@ impl<'s, B: Backend> User<'s, B> {
     /// async fn main() -> anyhow::Result<()> {
     ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
-    ///     let user = steam.user(0u64);
+    ///     let user = steam.user(76561198335077947u64);
     ///     let friends = user.friends(Some(Relationship::Friend)).await?;
     ///     Ok(())
     /// }
@@ -58,5 +58,24 @@ impl<'s, B: Backend> User<'s, B> {
         };
         let resp = self.client.get(req).await?;
         Ok(resp.friendslist.friends.iter().map(Into::into).collect())
+    }
+
+    /// request user group list
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let user = steam.user(76561198335077947u64);
+    ///     let friends = user.groups().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn groups(&self) -> Result<Vec<GroupId>, Error<B>> {
+        let req = GetUserGroupList { steamid: self.id };
+        let resp = self.client.get(req).await?;
+        Ok(resp.response.groups.iter().map(|group| group.gid).collect())
     }
 }
