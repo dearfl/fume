@@ -3,20 +3,23 @@ pub mod error;
 mod steam;
 pub use steam::*;
 
+mod user;
+pub use user::*;
+
 use fume_backend::Backend;
 
 pub trait Auth {
-    fn auth(&self) -> impl Iterator<Item = (&str, &str)>;
+    fn auth(&self) -> Option<(&str, String)>;
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct SteamApiKey {
-    pub key: &'static str,
+    pub key: String,
 }
 
 impl SteamApiKey {
     pub fn new(key: impl AsRef<str>) -> Self {
-        let key = String::leak(key.as_ref().to_owned());
+        let key = key.as_ref().to_string();
         Self { key }
     }
 
@@ -26,8 +29,8 @@ impl SteamApiKey {
 }
 
 impl Auth for SteamApiKey {
-    fn auth(&self) -> impl Iterator<Item = (&str, &str)> {
-        std::iter::once(("key", self.key))
+    fn auth(&self) -> Option<(&str, String)> {
+        Some(("key", self.key.to_string()))
     }
 }
 
@@ -41,7 +44,7 @@ impl Unauthorize {
 }
 
 impl Auth for Unauthorize {
-    fn auth(&self) -> impl Iterator<Item = (&str, &str)> {
-        std::iter::empty()
+    fn auth(&self) -> Option<(&str, String)> {
+        None
     }
 }
