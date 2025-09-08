@@ -3,9 +3,15 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use fume_backend::Backend;
 use fume_core::{
     Api,
-    app::{App, GetAppList},
-    user::SteamId,
-    util::{GetServerInfo, GetServerInfoResponse, GetSupportedApiList, Interface},
+    app::get_app_list::{App, GetAppList},
+    user::{
+        SteamId,
+        resolve_vanity_url::{ResolveVanityUrl, UrlType, VanityUrl},
+    },
+    util::{
+        get_server_info::{GetServerInfo, GetServerInfoResponse},
+        get_supported_api_list::{GetSupportedApiList, Interface},
+    },
 };
 
 use crate::{
@@ -118,6 +124,32 @@ impl<B: Backend> Steam<SteamApiKey, B> {
     pub fn user(&'_ self, id: impl Into<SteamId>) -> User<'_, B> {
         let id = id.into();
         User { client: self, id }
+    }
+
+    /// resolve user's custom url to 64bit steam id
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let id = steam.resolve_vanity_url("dummy", None).await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn resolve_vanity_url(
+        &self,
+        url: impl AsRef<str>,
+        url_type: Option<UrlType>,
+    ) -> Result<Option<SteamId>, Error<B>> {
+        let vanity_url = VanityUrl(url.as_ref().to_string());
+        let api = ResolveVanityUrl {
+            vanity_url,
+            url_type,
+        };
+        // ignore other fields
+        Ok(self.get(api).await?.response.steamid)
     }
 }
 

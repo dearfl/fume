@@ -1,4 +1,6 @@
-use fume_core::util::{GetServerInfoResponse, GetSupportedApiListResponse};
+use fume_core::util::{
+    get_server_info::GetServerInfoResponse, get_supported_api_list::GetSupportedApiListResponse,
+};
 
 #[test]
 fn get_supported_apis_decode() {

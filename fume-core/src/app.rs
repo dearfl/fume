@@ -1,55 +1,9 @@
-use serde::{Deserialize, Serialize};
-
-use crate::Api;
+use crate::quoted_number;
 
 pub(crate) const INTERFACE: &str = "ISteamApps";
 
-#[derive(Clone, Debug)]
-pub struct GetAppList;
+pub mod get_app_list;
 
-impl GetAppList {
-    pub const METHOD: &str = "GetAppList";
-    pub const VERSION: &str = "v2";
-}
-
-impl Api for GetAppList {
-    fn interface() -> &'static str {
-        INTERFACE
-    }
-
-    fn method() -> &'static str {
-        Self::METHOD
-    }
-
-    fn version() -> &'static str {
-        Self::VERSION
-    }
-
-    type Response = GetAppListResponse;
-
-    fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
-        std::iter::empty()
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct GetAppListResponse {
-    pub applist: AppList,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct AppList {
-    pub apps: Vec<App>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct App {
-    pub appid: AppId,
-    pub name: String,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct AppId(pub u64);
+// for get_app_list, we actually don't need this
+// however let allow AppId to be quoted anyway
+quoted_number!(AppId);

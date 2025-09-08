@@ -1,7 +1,10 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use fume_backend::Backend;
-use fume_core::user::{GetFriendList, GetUserGroupList, GroupId, Relationship, SteamId};
+use fume_core::user::{
+    GroupId, Relationship, SteamId, get_friend_list::GetFriendList,
+    get_user_group_list::GetUserGroupList,
+};
 
 use crate::{Steam, auth::SteamApiKey, error::Error};
 
@@ -22,8 +25,8 @@ pub struct Friend {
     pub since: SystemTime,
 }
 
-impl From<&fume_core::user::Friend> for Friend {
-    fn from(value: &fume_core::user::Friend) -> Self {
+impl From<&fume_core::user::get_friend_list::Friend> for Friend {
+    fn from(value: &fume_core::user::get_friend_list::Friend) -> Self {
         Self {
             id: value.steamid,
             relationship: value.relationship,
