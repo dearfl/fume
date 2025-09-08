@@ -39,6 +39,7 @@
             buildInputs = [
               rust
               openssl
+              cargo-expand
             ];
           };
       }
