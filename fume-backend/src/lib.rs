@@ -9,6 +9,12 @@ impl Backend for reqwest::Client {
     type Error = reqwest::Error;
 
     async fn get(&self, url: &str, query: &[(&str, String)]) -> Result<String, Self::Error> {
-        self.get(url).query(query).send().await?.text().await
+        self.get(url)
+            .query(query)
+            .send()
+            .await?
+            .error_for_status()?
+            .text()
+            .await
     }
 }

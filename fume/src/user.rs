@@ -9,6 +9,7 @@ use fume_core::user::{
 use crate::{Steam, auth::SteamApiKey, error::Error};
 
 /// Represent a steam user
+#[derive(Clone, Debug)]
 pub struct User<'s, B: Backend> {
     pub(crate) client: &'s Steam<SteamApiKey, B>,
     /// 64-bit steam user id
@@ -16,6 +17,7 @@ pub struct User<'s, B: Backend> {
 }
 
 /// Represent a steam user friend
+#[derive(Clone, Debug)]
 pub struct Friend {
     /// 64-bit steam user id
     pub id: SteamId,
