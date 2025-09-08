@@ -1,6 +1,8 @@
 use fume_core::{
     Response,
-    user::{GetFriendListResponse, GetUserGroupListResponseInner},
+    user::{
+        get_friend_list::GetFriendListResponse, get_user_group_list::GetUserGroupListResponseInner,
+    },
 };
 
 #[test]

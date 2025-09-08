@@ -1,4 +1,4 @@
-use fume_core::app::GetAppListResponse;
+use fume_core::app::get_app_list::GetAppListResponse;
 
 #[test]
 fn get_app_list_decode() {

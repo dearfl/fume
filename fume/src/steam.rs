@@ -3,9 +3,12 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use fume_backend::Backend;
 use fume_core::{
     Api,
-    app::{App, GetAppList},
+    app::get_app_list::{App, GetAppList},
     user::SteamId,
-    util::{GetServerInfo, GetServerInfoResponse, GetSupportedApiList, Interface},
+    util::{
+        get_server_info::{GetServerInfo, GetServerInfoResponse},
+        get_supported_api_list::{GetSupportedApiList, Interface},
+    },
 };
 
 use crate::{

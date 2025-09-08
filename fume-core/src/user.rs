@@ -1,11 +1,15 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Api, Param, Response, quoted_number};
+use crate::{Param, quoted_number};
 
 pub(crate) const INTERFACE: &str = "ISteamUser";
 pub(crate) const STEAM_ID_DELTA: u64 = 76561197960265728;
 
+pub mod get_friend_list;
+pub mod get_user_group_list;
+
 quoted_number!(SteamId);
+quoted_number!(GroupId);
 
 impl From<u64> for SteamId {
     fn from(value: u64) -> Self {
@@ -61,103 +65,3 @@ impl Param for Relationship {
         }
     }
 }
-
-#[derive(Clone, Debug)]
-pub struct GetFriendList {
-    pub steamid: SteamId,
-    pub relationship: Option<Relationship>,
-}
-
-impl GetFriendList {
-    pub const METHOD: &str = "GetFriendList";
-    pub const VERSION: &str = "v1";
-}
-
-impl Api for GetFriendList {
-    fn interface() -> &'static str {
-        INTERFACE
-    }
-
-    fn method() -> &'static str {
-        Self::METHOD
-    }
-
-    fn version() -> &'static str {
-        Self::VERSION
-    }
-
-    type Response = GetFriendListResponse;
-
-    fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
-        std::iter::once((SteamId::name(), self.steamid.value())).chain(
-            self.relationship
-                .iter()
-                .map(|relationship| (Relationship::name(), relationship.value())),
-        )
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct GetFriendListResponse {
-    pub friendslist: FriendList,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct FriendList {
-    pub friends: Vec<Friend>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct Friend {
-    pub steamid: SteamId,
-    pub relationship: Relationship,
-    pub friend_since: u64,
-}
-
-#[derive(Clone, Debug)]
-pub struct GetUserGroupList {
-    pub steamid: SteamId,
-}
-
-impl GetUserGroupList {
-    pub const METHOD: &str = "GetUserGroupList";
-    pub const VERSION: &str = "v1";
-}
-
-impl Api for GetUserGroupList {
-    fn interface() -> &'static str {
-        INTERFACE
-    }
-
-    fn method() -> &'static str {
-        Self::METHOD
-    }
-
-    fn version() -> &'static str {
-        Self::VERSION
-    }
-
-    type Response = Response<GetUserGroupListResponseInner>;
-
-    fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
-        std::iter::once((SteamId::name(), self.steamid.value()))
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct GetUserGroupListResponseInner {
-    pub success: bool,
-    pub groups: Vec<UserGroup>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct UserGroup {
-    pub gid: GroupId,
-}
-
-quoted_number!(GroupId);
