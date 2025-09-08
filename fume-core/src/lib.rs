@@ -18,3 +18,48 @@ pub trait Param {
     fn name() -> &'static str;
     fn value(&self) -> String;
 }
+
+macro_rules! quoted_number {
+    ($name:ident) => {
+        #[derive(Copy, Clone, Debug, serde::Serialize)]
+        #[serde(transparent)]
+        pub struct $name(pub u64);
+
+        impl<'de> serde::Deserialize<'de> for $name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct _CustomVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for _CustomVisitor {
+                    type Value = $name;
+
+                    fn expecting(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        fmt.write_str("integer or string")
+                    }
+
+                    fn visit_u64<E>(self, val: u64) -> Result<Self::Value, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        Ok($name(val))
+                    }
+
+                    fn visit_str<E>(self, val: &str) -> Result<Self::Value, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        val.parse::<u64>()
+                            .map_err(|_| E::custom(concat!("failed to parse ", stringify!($name))))
+                            .map($name)
+                    }
+                }
+
+                deserializer.deserialize_any(_CustomVisitor)
+            }
+        }
+    };
+}
+
+pub(crate) use quoted_number;

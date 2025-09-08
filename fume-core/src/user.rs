@@ -1,13 +1,11 @@
-use serde::{Deserialize, Serialize, de::Visitor};
+use serde::{Deserialize, Serialize};
 
-use crate::{Api, Param};
+use crate::{Api, Param, quoted_number};
 
 pub(crate) const INTERFACE: &str = "ISteamUser";
 pub(crate) const STEAM_ID_DELTA: u64 = 76561197960265728;
 
-#[derive(Copy, Clone, Debug, Serialize)]
-#[serde(transparent)]
-pub struct SteamId(pub u64);
+quoted_number!(SteamId);
 
 impl From<u64> for SteamId {
     fn from(value: u64) -> Self {
@@ -30,41 +28,6 @@ impl From<SteamId> for u32 {
 impl From<SteamId> for u64 {
     fn from(value: SteamId) -> Self {
         value.0
-    }
-}
-
-impl<'de> Deserialize<'de> for SteamId {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct SteamIdVisitor;
-
-        impl<'de> Visitor<'de> for SteamIdVisitor {
-            type Value = SteamId;
-
-            fn expecting(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                fmt.write_str("integer or string")
-            }
-
-            fn visit_u64<E>(self, val: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(SteamId(val))
-            }
-
-            fn visit_str<E>(self, val: &str) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                val.parse::<u64>()
-                    .map_err(|_| E::custom("failed to parse steamid"))
-                    .map(SteamId)
-            }
-        }
-
-        deserializer.deserialize_any(SteamIdVisitor)
     }
 }
 
@@ -203,41 +166,4 @@ pub struct UserGroup {
     pub gid: GroupId,
 }
 
-#[derive(Copy, Clone, Debug, Serialize)]
-#[serde(transparent)]
-pub struct GroupId(pub u64);
-
-impl<'de> Deserialize<'de> for GroupId {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct GroupIdVisitor;
-
-        impl<'de> Visitor<'de> for GroupIdVisitor {
-            type Value = GroupId;
-
-            fn expecting(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                fmt.write_str("integer or string")
-            }
-
-            fn visit_u64<E>(self, val: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(GroupId(val))
-            }
-
-            fn visit_str<E>(self, val: &str) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                val.parse::<u64>()
-                    .map_err(|_| E::custom("failed to parse groupid"))
-                    .map(GroupId)
-            }
-        }
-
-        deserializer.deserialize_any(GroupIdVisitor)
-    }
-}
+quoted_number!(GroupId);
