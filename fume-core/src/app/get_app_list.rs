@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::Api;
+use crate::{Api, app::AppId};
 
 use super::INTERFACE;
 
@@ -50,6 +50,3 @@ pub struct App {
     pub appid: AppId,
     pub name: String,
 }
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct AppId(pub u64);
