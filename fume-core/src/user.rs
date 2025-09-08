@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Api, Param, quoted_number};
+use crate::{Api, Param, Response, quoted_number};
 
 pub(crate) const INTERFACE: &str = "ISteamUser";
 pub(crate) const STEAM_ID_DELTA: u64 = 76561197960265728;
@@ -140,7 +140,7 @@ impl Api for GetUserGroupList {
         Self::VERSION
     }
 
-    type Response = GetUserGroupListResponse;
+    type Response = Response<GetUserGroupListResponseInner>;
 
     fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
         std::iter::once((SteamId::name(), self.steamid.value()))
@@ -149,13 +149,7 @@ impl Api for GetUserGroupList {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct GetUserGroupListResponse {
-    pub response: GetUserGroupListResponseWrapper,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
-pub struct GetUserGroupListResponseWrapper {
+pub struct GetUserGroupListResponseInner {
     pub success: bool,
     pub groups: Vec<UserGroup>,
 }

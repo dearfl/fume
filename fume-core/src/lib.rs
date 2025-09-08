@@ -1,4 +1,4 @@
-use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 pub mod app;
 pub mod user;
@@ -17,6 +17,13 @@ pub trait Api {
 pub trait Param {
     fn name() -> &'static str;
     fn value(&self) -> String;
+}
+
+/// A generic response type
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
+pub struct Response<T> {
+    pub response: T,
 }
 
 macro_rules! quoted_number {
