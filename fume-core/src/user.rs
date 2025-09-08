@@ -7,6 +7,7 @@ pub(crate) const STEAM_ID_DELTA: u64 = 76561197960265728;
 
 pub mod get_friend_list;
 pub mod get_user_group_list;
+pub mod resolve_vanity_url;
 
 quoted_number!(SteamId);
 quoted_number!(GroupId);

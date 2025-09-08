@@ -26,6 +26,15 @@ pub struct Response<T> {
     pub response: T,
 }
 
+/// A generic response status type
+#[derive(Clone, Debug, Serialize_repr, Deserialize_repr)]
+#[cfg_attr(feature = "deny-unknown-fields", serde(deny_unknown_fields))]
+#[repr(u8)]
+pub enum ResponseResult {
+    Success = 1,
+    Failure = 42,
+}
+
 macro_rules! quoted_number {
     ($name:ident) => {
         #[derive(Copy, Clone, Debug, serde::Serialize)]
@@ -70,3 +79,4 @@ macro_rules! quoted_number {
 }
 
 pub(crate) use quoted_number;
+use serde_repr::{Deserialize_repr, Serialize_repr};
