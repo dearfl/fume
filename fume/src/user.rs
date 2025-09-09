@@ -2,7 +2,9 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use fume_backend::Backend;
 use fume_core::user::{
-    GroupId, Relationship, SteamId, get_friend_list::GetFriendList,
+    GroupId, Relationship, SteamId,
+    get_friend_list::GetFriendList,
+    get_player_summaries::{GetPlayerSummaries, PlayerSummary, SteamIds},
     get_user_group_list::GetUserGroupList,
 };
 
@@ -84,5 +86,52 @@ impl<'s, B: Backend> User<'s, B> {
         };
         let resp = self.0.client.get(req).await?;
         Ok(resp.response.groups.iter().map(|group| group.gid).collect())
+    }
+
+    /// request player summary
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let user = steam.user(76561198335077947u64);
+    ///     let summary = user.summary().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn summary(&self) -> Result<Option<PlayerSummary>, Error<B>> {
+        let req = GetPlayerSummaries {
+            steamids: SteamIds(vec![self.0.value]),
+        };
+        let resp = self.0.client.get(req).await?;
+        Ok(resp.response.players.into_iter().next())
+    }
+}
+
+pub struct Users<'s, B: Backend>(pub(crate) SteamRef<'s, B, Vec<SteamId>>);
+
+impl<'s, B: Backend> Users<'s, B> {
+    /// request player summaries
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let ids = vec![76561198335077947u64, 76561198335077948u64];
+    ///     let users = steam.users(ids);
+    ///     let summary = users.summaries().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn summaries(&self) -> Result<Vec<PlayerSummary>, Error<B>> {
+        let req = GetPlayerSummaries {
+            steamids: SteamIds(self.0.value.clone()),
+        };
+        let resp = self.0.client.get(req).await?;
+        Ok(resp.response.players)
     }
 }

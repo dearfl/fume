@@ -18,6 +18,7 @@ use crate::{
     User,
     auth::{Auth, SteamApiKey},
     error::Error,
+    user::Users,
 };
 
 pub(crate) const HOST: &str = "api.steampowered.com";
@@ -138,6 +139,12 @@ impl<B: Backend> Steam<SteamApiKey, B> {
             .ok()
             .flatten()
             .map(|value| User(self.create_client_ref(value)))
+    }
+
+    /// Construct a steam user from 64-bit steam id
+    pub fn users(&'_ self, ids: impl IntoIterator<Item = impl Into<SteamId>>) -> Users<'_, B> {
+        let users: Vec<SteamId> = ids.into_iter().map(Into::into).collect();
+        Users(self.create_client_ref(users))
     }
 
     /// resolve user's custom url to 64-bit steam id

@@ -19,9 +19,21 @@ impl From<u64> for SteamId {
     }
 }
 
+impl From<&u64> for SteamId {
+    fn from(value: &u64) -> Self {
+        SteamId(*value)
+    }
+}
+
 impl From<u32> for SteamId {
     fn from(value: u32) -> Self {
         SteamId(u64::from(value) + STEAM_ID_DELTA)
+    }
+}
+
+impl From<&u32> for SteamId {
+    fn from(value: &u32) -> Self {
+        SteamId(u64::from(*value) + STEAM_ID_DELTA)
     }
 }
 
