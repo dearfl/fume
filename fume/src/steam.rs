@@ -18,6 +18,7 @@ use crate::{
     User,
     auth::{Auth, SteamApiKey},
     error::Error,
+    user::Users,
 };
 
 pub(crate) const HOST: &str = "api.steampowered.com";
@@ -120,13 +121,33 @@ impl<A: Auth, B: Backend> Steam<A, B> {
 }
 
 impl<B: Backend> Steam<SteamApiKey, B> {
-    /// Construct a steam user
-    pub fn user(&'_ self, id: impl Into<SteamId>) -> User<'_, B> {
-        let id = id.into();
-        User { client: self, id }
+    pub(crate) fn create_client_ref<D>(&'_ self, value: impl Into<D>) -> SteamRef<'_, B, D> {
+        let client = self;
+        let value = value.into();
+        SteamRef { client, value }
     }
 
-    /// resolve user's custom url to 64bit steam id
+    /// Construct a steam user from 64-bit steam id
+    pub fn user(&'_ self, id: impl Into<SteamId>) -> User<'_, B> {
+        User(self.create_client_ref(id))
+    }
+
+    /// Construct a steam user from custom url
+    pub async fn user_from_vanity_url(&'_ self, url: impl AsRef<str>) -> Option<User<'_, B>> {
+        self.resolve_vanity_url(url, None)
+            .await
+            .ok()
+            .flatten()
+            .map(|value| User(self.create_client_ref(value)))
+    }
+
+    /// Construct a steam user from 64-bit steam id
+    pub fn users(&'_ self, ids: impl IntoIterator<Item = impl Into<SteamId>>) -> Users<'_, B> {
+        let users: Vec<SteamId> = ids.into_iter().map(Into::into).collect();
+        Users(self.create_client_ref(users))
+    }
+
+    /// resolve user's custom url to 64-bit steam id
     /// ```rust,no_run
     /// use fume::{Auth, SteamApiKey};
     ///
@@ -166,4 +187,12 @@ impl From<GetServerInfoResponse> for ServerInfo {
             servertimestring: value.servertimestring,
         }
     }
+}
+
+/// a generic Steam client reference, useful for custom type such as User
+#[derive(Clone, Debug)]
+pub(crate) struct SteamRef<'s, B: Backend, D = ()> {
+    // we could use Arc to remove lifetime annotation, but do we really want to?
+    pub(crate) client: &'s Steam<SteamApiKey, B>,
+    pub(crate) value: D,
 }

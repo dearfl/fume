@@ -67,11 +67,8 @@ impl Api for ResolveVanityUrl {
     type Response = Response<ResolveVanityUrlResponseInner>;
 
     fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
-        std::iter::once((VanityUrl::name(), self.vanity_url.value())).chain(
-            self.url_type
-                .iter()
-                .map(|url_type| (UrlType::name(), url_type.value())),
-        )
+        std::iter::once(self.vanity_url.param())
+            .chain(self.url_type.iter().map(|url_type| url_type.param()))
     }
 }
 

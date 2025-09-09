@@ -2,19 +2,13 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use fume_backend::Backend;
 use fume_core::user::{
-    GroupId, Relationship, SteamId, get_friend_list::GetFriendList,
+    GroupId, Relationship, SteamId,
+    get_friend_list::GetFriendList,
+    get_player_summaries::{GetPlayerSummaries, PlayerSummary, SteamIds},
     get_user_group_list::GetUserGroupList,
 };
 
-use crate::{Steam, auth::SteamApiKey, error::Error};
-
-/// Represent a steam user
-#[derive(Clone, Debug)]
-pub struct User<'s, B: Backend> {
-    pub(crate) client: &'s Steam<SteamApiKey, B>,
-    /// 64-bit steam user id
-    pub id: SteamId,
-}
+use crate::{error::Error, steam::SteamRef};
 
 /// Represent a steam user friend
 #[derive(Clone, Debug)]
@@ -37,7 +31,15 @@ impl From<&fume_core::user::get_friend_list::Friend> for Friend {
     }
 }
 
+/// Represent a steam user
+pub struct User<'s, B: Backend>(pub(crate) SteamRef<'s, B, SteamId>);
+
 impl<'s, B: Backend> User<'s, B> {
+    /// returns the steamid of user
+    pub fn id(&self) -> SteamId {
+        self.0.value
+    }
+
     /// request friend list, if a user's friend list is marked as private,
     /// then this will return an HTTP 401 Unauthorized error.
     /// ```rust,no_run
@@ -58,10 +60,10 @@ impl<'s, B: Backend> User<'s, B> {
         relationship: Option<Relationship>,
     ) -> Result<Vec<Friend>, Error<B>> {
         let req = GetFriendList {
-            steamid: self.id,
+            steamid: self.0.value,
             relationship,
         };
-        let resp = self.client.get(req).await?;
+        let resp = self.0.client.get(req).await?;
         Ok(resp.friendslist.friends.iter().map(Into::into).collect())
     }
 
@@ -79,8 +81,57 @@ impl<'s, B: Backend> User<'s, B> {
     /// }
     /// ```
     pub async fn groups(&self) -> Result<Vec<GroupId>, Error<B>> {
-        let req = GetUserGroupList { steamid: self.id };
-        let resp = self.client.get(req).await?;
+        let req = GetUserGroupList {
+            steamid: self.0.value,
+        };
+        let resp = self.0.client.get(req).await?;
         Ok(resp.response.groups.iter().map(|group| group.gid).collect())
+    }
+
+    /// request player summary
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let user = steam.user(76561198335077947u64);
+    ///     let summary = user.summary().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn summary(&self) -> Result<Option<PlayerSummary>, Error<B>> {
+        let req = GetPlayerSummaries {
+            steamids: SteamIds(vec![self.0.value]),
+        };
+        let resp = self.0.client.get(req).await?;
+        Ok(resp.response.players.into_iter().next())
+    }
+}
+
+pub struct Users<'s, B: Backend>(pub(crate) SteamRef<'s, B, Vec<SteamId>>);
+
+impl<'s, B: Backend> Users<'s, B> {
+    /// request player summaries
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let ids = vec![76561198335077947u64, 76561198335077948u64];
+    ///     let users = steam.users(ids);
+    ///     let summary = users.summaries().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn summaries(&self) -> Result<Vec<PlayerSummary>, Error<B>> {
+        let req = GetPlayerSummaries {
+            steamids: SteamIds(self.0.value.clone()),
+        };
+        let resp = self.0.client.get(req).await?;
+        Ok(resp.response.players)
     }
 }

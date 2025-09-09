@@ -33,7 +33,7 @@ impl Api for GetUserGroupList {
     type Response = Response<GetUserGroupListResponseInner>;
 
     fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
-        std::iter::once((SteamId::name(), self.steamid.value()))
+        std::iter::once(self.steamid.param())
     }
 }
 
