@@ -1,11 +1,14 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use fume_backend::Backend;
-use fume_core::user::{
-    GroupId, Relationship, SteamId,
-    get_friend_list::GetFriendList,
-    get_player_summaries::{GetPlayerSummaries, PlayerSummary, SteamIds},
-    get_user_group_list::GetUserGroupList,
+use fume_core::{
+    player::get_steam_level::GetSteamLevel,
+    user::{
+        GroupId, Relationship, SteamId,
+        get_friend_list::GetFriendList,
+        get_player_summaries::{GetPlayerSummaries, PlayerSummary, SteamIds},
+        get_user_group_list::GetUserGroupList,
+    },
 };
 
 use crate::{error::Error, steam::SteamRef};
@@ -107,6 +110,27 @@ impl<'s, B: Backend> User<'s, B> {
         };
         let resp = self.0.client.get(req).await?;
         Ok(resp.response.players.into_iter().next())
+    }
+
+    /// get player steam level
+    /// ```rust,no_run
+    /// use fume::{Auth, SteamApiKey};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> anyhow::Result<()> {
+    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let steam = key.with_client(reqwest::Client::new());
+    ///     let user = steam.user(76561198335077947u64);
+    ///     let level = user.level().await?;
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn level(&self) -> Result<u64, Error<B>> {
+        let req = GetSteamLevel {
+            steamid: self.0.value,
+        };
+        let resp = self.0.client.get(req).await?;
+        Ok(resp.response.player_level)
     }
 }
 
