@@ -34,10 +34,10 @@ impl Api for GetFriendList {
     type Response = GetFriendListResponse;
 
     fn parameters(&self) -> impl Iterator<Item = (&str, String)> {
-        std::iter::once((SteamId::name(), self.steamid.value())).chain(
+        std::iter::once(self.steamid.param()).chain(
             self.relationship
                 .iter()
-                .map(|relationship| (Relationship::name(), relationship.value())),
+                .map(|relationship| relationship.param()),
         )
     }
 }

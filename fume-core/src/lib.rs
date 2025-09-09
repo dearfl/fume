@@ -17,6 +17,9 @@ pub trait Api {
 pub trait Param {
     fn name() -> &'static str;
     fn value(&self) -> String;
+    fn param(&self) -> (&'static str, String) {
+        (Self::name(), self.value())
+    }
 }
 
 /// A generic response type
