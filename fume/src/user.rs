@@ -6,15 +6,7 @@ use fume_core::user::{
     get_user_group_list::GetUserGroupList,
 };
 
-use crate::{Steam, auth::SteamApiKey, error::Error};
-
-/// Represent a steam user
-#[derive(Clone, Debug)]
-pub struct User<'s, B: Backend> {
-    pub(crate) client: &'s Steam<SteamApiKey, B>,
-    /// 64-bit steam user id
-    pub id: SteamId,
-}
+use crate::{error::Error, steam::SteamRef};
 
 /// Represent a steam user friend
 #[derive(Clone, Debug)]
@@ -37,7 +29,15 @@ impl From<&fume_core::user::get_friend_list::Friend> for Friend {
     }
 }
 
+/// Represent a steam user
+pub struct User<'s, B: Backend>(pub(crate) SteamRef<'s, B, SteamId>);
+
 impl<'s, B: Backend> User<'s, B> {
+    /// returns the steamid of user
+    pub fn id(&self) -> SteamId {
+        self.0.value
+    }
+
     /// request friend list, if a user's friend list is marked as private,
     /// then this will return an HTTP 401 Unauthorized error.
     /// ```rust,no_run
@@ -58,10 +58,10 @@ impl<'s, B: Backend> User<'s, B> {
         relationship: Option<Relationship>,
     ) -> Result<Vec<Friend>, Error<B>> {
         let req = GetFriendList {
-            steamid: self.id,
+            steamid: self.0.value,
             relationship,
         };
-        let resp = self.client.get(req).await?;
+        let resp = self.0.client.get(req).await?;
         Ok(resp.friendslist.friends.iter().map(Into::into).collect())
     }
 
@@ -79,8 +79,10 @@ impl<'s, B: Backend> User<'s, B> {
     /// }
     /// ```
     pub async fn groups(&self) -> Result<Vec<GroupId>, Error<B>> {
-        let req = GetUserGroupList { steamid: self.id };
-        let resp = self.client.get(req).await?;
+        let req = GetUserGroupList {
+            steamid: self.0.value,
+        };
+        let resp = self.0.client.get(req).await?;
         Ok(resp.response.groups.iter().map(|group| group.gid).collect())
     }
 }
