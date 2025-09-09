@@ -6,6 +6,7 @@ pub(crate) const INTERFACE: &str = "ISteamUser";
 pub(crate) const STEAM_ID_DELTA: u64 = 76561197960265728;
 
 pub mod get_friend_list;
+pub mod get_player_summaries;
 pub mod get_user_group_list;
 pub mod resolve_vanity_url;
 
