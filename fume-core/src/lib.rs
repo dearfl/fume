@@ -1,13 +1,27 @@
+/// This crate describes steam web apis including its interface,
+/// method, version, parameters and response type and etc
+/// we separate the definition from http client impl to attempts
+/// multiple http client backend support and async/blocking support
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 pub mod app;
 pub mod player;
 pub mod user;
 pub mod util;
 
+/// this trait describes a specific steam web api
+/// a steam web api endpoint usually defines as follow
+/// {HTTP_METHOD} https://{host}/{interface}/{method}/{version}?{queries}
+/// the `key` parameter is not treated as part of endpoint itself,
+/// but rather an authencation parameter hence not include here
 pub trait Api {
+    // TODO: HTTP method get/post
+    /// steam web api interface such as "ISteamWebAPIUtil"
     fn interface() -> &'static str;
+    /// steam web api method such as "GetSteamLevel"
     fn method() -> &'static str;
+    /// steam web api version
     fn version() -> &'static str;
 
     type Response: DeserializeOwned;
@@ -16,8 +30,11 @@ pub trait Api {
 }
 
 pub trait Param {
+    /// url query name
     fn name() -> &'static str;
+    /// url query value
     fn value(&self) -> String;
+    /// url query pair
     fn param(&self) -> (&'static str, String) {
         (Self::name(), self.value())
     }
@@ -39,6 +56,8 @@ pub enum ResponseResult {
     Failure = 42,
 }
 
+// some integer types steam wep api returns may be quoted
+#[macro_export]
 macro_rules! quoted_number {
     ($name:ident) => {
         #[derive(Copy, Clone, Debug, serde::Serialize)]
@@ -81,6 +100,3 @@ macro_rules! quoted_number {
         }
     };
 }
-
-pub(crate) use quoted_number;
-use serde_repr::{Deserialize_repr, Serialize_repr};

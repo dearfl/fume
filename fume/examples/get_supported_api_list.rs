@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use fume::{Auth, SteamApiKey, Unauthorize};
+use fume::{ApiKey, Auth, Unauthorize};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -11,7 +11,7 @@ async fn main() -> anyhow::Result<()> {
 
     let apilist = match std::env::args().nth(1) {
         Some(key) => {
-            let api = SteamApiKey::new(key);
+            let api = ApiKey::new(key);
             let steam = api.with_client(client);
             steam.apis().await?
         }

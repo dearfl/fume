@@ -1,6 +1,5 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use fume_backend::Backend;
 use fume_core::{
     player::get_steam_level::GetSteamLevel,
     user::{
@@ -11,7 +10,7 @@ use fume_core::{
     },
 };
 
-use crate::{error::Error, steam::SteamRef};
+use crate::{Backend, error::Error, steam::SteamRef};
 
 /// Represent a steam user friend
 #[derive(Clone, Debug)]
@@ -46,12 +45,12 @@ impl<'s, B: Backend> User<'s, B> {
     /// request friend list, if a user's friend list is marked as private,
     /// then this will return an HTTP 401 Unauthorized error.
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     /// use fume_core::user::Relationship;
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
-    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let key = ApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
     ///     let user = steam.user(76561198335077947u64);
     ///     let friends = user.friends(Some(Relationship::Friend)).await?;
@@ -72,14 +71,14 @@ impl<'s, B: Backend> User<'s, B> {
 
     /// request user group list
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
-    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let key = ApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
     ///     let user = steam.user(76561198335077947u64);
-    ///     let friends = user.groups().await?;
+    ///     let groups = user.groups().await?;
     ///     Ok(())
     /// }
     /// ```
@@ -93,11 +92,11 @@ impl<'s, B: Backend> User<'s, B> {
 
     /// request player summary
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
-    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let key = ApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
     ///     let user = steam.user(76561198335077947u64);
     ///     let summary = user.summary().await?;
@@ -114,11 +113,11 @@ impl<'s, B: Backend> User<'s, B> {
 
     /// get player steam level
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
-    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let key = ApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
     ///     let user = steam.user(76561198335077947u64);
     ///     let level = user.level().await?;
@@ -139,15 +138,15 @@ pub struct Users<'s, B: Backend>(pub(crate) SteamRef<'s, B, Vec<SteamId>>);
 impl<'s, B: Backend> Users<'s, B> {
     /// request player summaries
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
-    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let key = ApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
     ///     let ids = vec![76561198335077947u64, 76561198335077948u64];
     ///     let users = steam.users(ids);
-    ///     let summary = users.summaries().await?;
+    ///     let summaries = users.summaries().await?;
     ///     Ok(())
     /// }
     /// ```

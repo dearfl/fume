@@ -1,13 +1,13 @@
 #![doc = include_str!("../../README.md")]
 
-mod error;
-pub use error::Error;
-
 mod auth;
-pub use auth::{Auth, SteamApiKey, Unauthorize};
-
+mod backend;
+mod error;
 mod steam;
-pub use steam::{ServerInfo, Steam};
-
 mod user;
+
+pub use auth::{ApiKey, Auth, Unauthorize};
+pub use backend::Backend;
+pub use error::Error;
+pub use steam::{ServerInfo, Steam};
 pub use user::{Friend, User};

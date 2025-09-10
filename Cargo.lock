@@ -182,20 +182,12 @@ name = "fume"
 version = "0.0.1"
 dependencies = [
  "anyhow",
- "fume-backend",
  "fume-core",
  "reqwest",
  "serde",
  "serde_json",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "fume-backend"
-version = "0.0.1"
-dependencies = [
- "reqwest",
 ]
 
 [[package]]
