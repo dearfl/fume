@@ -1,10 +1,8 @@
-use fume_backend::Backend;
-
-use crate::Steam;
+use crate::{Backend, Steam};
 
 /// A simple trait used for authentication
 /// the only reason this trait exists is to simplify Steam's impl
-/// SteamApiKey/Unauthorize is the type state of Steam HTTP client
+/// ApiKey/Unauthorize is the type state of Steam HTTP client
 /// different methods are available for different type state
 /// same method may return different result for different type state
 pub trait Auth: Sized {
@@ -12,9 +10,9 @@ pub trait Auth: Sized {
     fn auth(&self) -> Option<(&str, String)>;
     /// provided method for create steam http client from Auth types
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     ///
-    /// let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    /// let key = ApiKey::new("STEAM_DUMMY_KEY");
     /// let client = reqwest::Client::new();
     /// let steam = key.with_client(client);
     /// ```
@@ -25,11 +23,11 @@ pub trait Auth: Sized {
 
 /// get your steam web api key from: <https://steamcommunity.com/dev/apikey>
 #[derive(Clone, Debug)]
-pub struct SteamApiKey {
+pub struct ApiKey {
     pub key: String,
 }
 
-impl SteamApiKey {
+impl ApiKey {
     /// construct a new steam api key
     pub fn new(key: impl AsRef<str>) -> Self {
         let key = key.as_ref().to_string();
@@ -37,7 +35,7 @@ impl SteamApiKey {
     }
 }
 
-impl Auth for SteamApiKey {
+impl Auth for ApiKey {
     fn auth(&self) -> Option<(&str, String)> {
         Some(("key", self.key.to_string()))
     }

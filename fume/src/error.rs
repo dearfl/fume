@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use fume_backend::Backend;
+use crate::Backend;
 
 /// Unified error definition, different backend will
 /// return different error type.

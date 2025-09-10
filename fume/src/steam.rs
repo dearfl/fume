@@ -1,6 +1,5 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use fume_backend::Backend;
 use fume_core::{
     Api,
     app::get_app_list::{App, GetAppList},
@@ -15,8 +14,8 @@ use fume_core::{
 };
 
 use crate::{
-    User,
-    auth::{Auth, SteamApiKey},
+    Backend, User,
+    auth::{ApiKey, Auth},
     error::Error,
     user::Users,
 };
@@ -71,7 +70,7 @@ impl<A: Auth, B: Backend> Steam<A, B> {
         Ok(serde_json::from_str(&content)?)
     }
 
-    /// get the availble apis, SteamApiKey and Unauthorize will return different result
+    /// get the availble apis, ApiKey and Unauthorize will return different result
     /// ```rust,no_run
     /// use fume::{Auth, Unauthorize};
     ///
@@ -120,7 +119,7 @@ impl<A: Auth, B: Backend> Steam<A, B> {
     }
 }
 
-impl<B: Backend> Steam<SteamApiKey, B> {
+impl<B: Backend> Steam<ApiKey, B> {
     pub(crate) fn create_client_ref<D>(&'_ self, value: impl Into<D>) -> SteamRef<'_, B, D> {
         let client = self;
         let value = value.into();
@@ -149,11 +148,11 @@ impl<B: Backend> Steam<SteamApiKey, B> {
 
     /// resolve user's custom url to 64-bit steam id
     /// ```rust,no_run
-    /// use fume::{Auth, SteamApiKey};
+    /// use fume::{Auth, ApiKey};
     ///
     /// #[tokio::main]
     /// async fn main() -> anyhow::Result<()> {
-    ///     let key = SteamApiKey::new("STEAM_DUMMY_KEY");
+    ///     let key = ApiKey::new("STEAM_DUMMY_KEY");
     ///     let steam = key.with_client(reqwest::Client::new());
     ///     let id = steam.resolve_vanity_url("dummy", None).await?;
     ///     Ok(())
@@ -193,6 +192,6 @@ impl From<GetServerInfoResponse> for ServerInfo {
 #[derive(Clone, Debug)]
 pub(crate) struct SteamRef<'s, B: Backend, D = ()> {
     // we could use Arc to remove lifetime annotation, but do we really want to?
-    pub(crate) client: &'s Steam<SteamApiKey, B>,
+    pub(crate) client: &'s Steam<ApiKey, B>,
     pub(crate) value: D,
 }

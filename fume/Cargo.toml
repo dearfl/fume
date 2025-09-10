@@ -10,14 +10,14 @@ exclude = [ ".*", "flake.*" ]
 
 [dependencies]
 fume-core = { workspace = true }
-fume-backend = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+reqwest = { workspace = true, optional = true }
 
 [features]
 default = ["reqwest"]
-reqwest = ["fume-backend/reqwest"]
+reqwest = ["dep:reqwest"]
 
 [dev-dependencies]
 anyhow = { workspace = true }
