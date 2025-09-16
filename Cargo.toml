@@ -7,7 +7,7 @@ fume-core = { version = "0.0.1", path = "fume-core" }
 reqwest = { version = "0.12.23" }
 serde = { version = "1.0.223", features = ["derive"] }
 serde_repr = "0.1.20"
-serde_json = "1.0.143"
+serde_json = "1.0.145"
 thiserror = "2.0.15"
 anyhow = "1.0.99"
 tokio = { version = "1.47.1", features = ["full"] }
