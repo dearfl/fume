@@ -5,6 +5,7 @@ edition = "2024"
 license = "GLWTPL"
 description = "A strongly-opinionated Rust wrapper for steam web APIs."
 repository = "https://github.com/dearfl/fume"
+readme = "../README.md"
 keywords = [ "steam", "api" ]
 exclude = [ ".*", "flake.*" ]
 
