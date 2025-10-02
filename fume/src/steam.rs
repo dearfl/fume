@@ -54,7 +54,8 @@ impl<A: Auth, B: Backend> Steam<A, B> {
         Self { host, ..self }
     }
 
-    pub(crate) async fn get<T: Api>(&self, api: T) -> Result<T::Response, Error<B>> {
+    /// request an user implemented endpoint with get
+    pub async fn get<T: Api>(&self, api: T) -> Result<T::Response, Error<B>> {
         let url = self.url::<T>();
         let query: Vec<_> = self
             .auth
