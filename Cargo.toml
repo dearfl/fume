@@ -3,7 +3,7 @@ resolver = "3"
 members = ["fume", "fume-core"]
 
 [workspace.dependencies]
-fume-core = { version = "0.0.1", path = "fume-core" }
+fume-core = { version = "0.0.2", path = "fume-core" }
 reqwest = { version = "0.12.23" }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_repr = "0.1.20"
