@@ -10,4 +10,4 @@ pub use auth::{ApiKey, Auth, Unauthorize};
 pub use backend::Backend;
 pub use error::Error;
 pub use steam::{ServerInfo, Steam};
-pub use user::{Friend, User};
+pub use user::{Friend, User, Users};

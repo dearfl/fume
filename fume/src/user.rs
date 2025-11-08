@@ -133,6 +133,7 @@ impl<'s, B: Backend> User<'s, B> {
     }
 }
 
+/// represents a list of users, useful for batch operations
 pub struct Users<'s, B: Backend>(pub(crate) SteamRef<'s, B, Vec<SteamId>>);
 
 impl<'s, B: Backend> Users<'s, B> {
